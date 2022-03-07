@@ -1,26 +1,36 @@
 #include <iostream>
+#include <vector>
 #include <algorithm>
+
 #ifdef GTEST
 #include <gtest/gtest.h>
 #endif
 
 int compute_chain_length(std::string original_number)
 {
-    int count = 1;
+    int count = 0;
     std::string tmp = original_number;
+    int large_number, little_number, result_number;
 
-    std::sort(tmp.begin(), tmp.end(), std::greater< int >());
-    int large_number = std::stoi(tmp);
+    std::vector< int > myvector;
 
-    std::sort(tmp.begin(), tmp.end(), std::less< int >());
-    int little_number = std::stoi(tmp);
-    int result_number = large_number - little_number;
+    while (true) {
+        std::sort(tmp.begin(), tmp.end(), std::greater< int >());
+        large_number = std::stoi(tmp);
+        std::sort(tmp.begin(), tmp.end(), std::less< int >());
+        little_number = std::stoi(tmp);
 
-    std::string result_string = std::to_string(result_number);
-    std::cout << large_number << " - " << little_number << " = " << result_number << std::endl;
+        result_number = large_number - little_number;
+        std::cout << large_number << " - " << little_number << " = " << result_number << std::endl;
+        count++;
 
-    if (original_number.compare(result_string) != 0)
-        count = compute_chain_length(result_string) + 1;
+        std::vector< int >::iterator it = find(myvector.begin(), myvector.end(), result_number);
+        if (it != myvector.end())
+            break;
+        myvector.push_back(result_number);
+
+        tmp = std::to_string(result_number);
+    }
 
     return count;
 }
