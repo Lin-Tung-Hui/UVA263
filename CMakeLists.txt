@@ -9,6 +9,8 @@ CMAKE_MINIMUM_REQUIRED (VERSION 3.15)
 PROJECT (numberchain)
 ENABLE_LANGUAGE(C CXX)
 
+option(GTEST "Enable Google Test" ON)
+
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_COLOR_MAKEFILE ON)
 SET(CMAKE_ERROR_DEPRECATED ON)
@@ -28,24 +30,14 @@ INCLUDE(GNUInstallDirs)
 INCLUDE(FeatureSummary)
 INCLUDE(FindPkgConfig)
 
-#------------------
-# Sub Projects
-#-------------------------------------------------------------------------------
-ADD_SUBDIRECTORY(src)
+if(GTEST)
+  find_package(GTest CONFIG REQUIRED)
+  ADD_DEFINITIONS("-DGTEST")
+endif()
 
-#-------------------------------------------------------------------------------
-# Options
-#-------------------------------------------------------------------------------
-# Detect avaliable options directly
-  INCLUDE(options.cmake)
-
-
-#-------------------------------------------------------------------------------
-# Sub Projects (unittest)
-#-------------------------------------------------------------------------------
-# Only perform following  when use as standalone project
-# Enable testing default
-ENABLE_TESTING()
-ADD_SUBDIRECTORY(tests)
-
-
+if(GTEST)
+add_executable(test_runner main.cpp numberchain_unittest.cpp)
+target_link_libraries(test_runner GTest::gtest)
+else()
+add_executable(main main.cpp)
+endif()
